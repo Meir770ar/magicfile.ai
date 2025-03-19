@@ -1,9 +1,7 @@
-
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "@/components/ui/use-toast";
-import { UploadFile } from '@/api/integrations';
 import { Badge } from "@/components/ui/badge";
 import {
   Upload,
@@ -14,14 +12,9 @@ import {
   FileVideo,
   Loader2,
   File,
-  ChevronDown,
-  ChevronUp,
   ArrowRight,
   Download,
   Check,
-  Info,
-  AlertTriangle,
-  Sparkles,
   Brain,
   FileOutput,
   PenTool
@@ -30,6 +23,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { createPageUrl } from "@/utils";
 import { Link } from "react-router-dom";
 
+// Modified SmartFileUploader that works without authentication
 export default function SmartFileUploader({ 
   onFileUpload,
   maxSizeMB = 100,
@@ -158,6 +152,7 @@ export default function SmartFileUploader({
     e.target.value = "";
   };
 
+  // Modified to work without server authentication
   const processFile = async (file) => {
     if (file.size > maxSizeMB * 1024 * 1024) {
       toast({
@@ -188,6 +183,7 @@ export default function SmartFileUploader({
       
       const type = fileTypeMap[fileExtension] || 'document';
       
+      // Simulate processing delay
       await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1000));
       
       clearInterval(progressInterval);
@@ -204,6 +200,7 @@ export default function SmartFileUploader({
           setTimeout(() => {
             setIsAnalyzing(false);
             
+            // Create a URL for the file that can be used without server upload
             const uploadedFileData = {
               name: fileName,
               size: file.size,
@@ -233,10 +230,10 @@ export default function SmartFileUploader({
       }, 300);
       
     } catch (error) {
-      console.error('Error uploading file:', error);
+      console.error('Error processing file:', error);
       toast({
-        title: "Upload failed",
-        description: "There was an error uploading your file. Please try again.",
+        title: "Processing failed",
+        description: "There was an error processing your file. Please try again.",
         variant: "destructive"
       });
     } finally {
@@ -244,6 +241,7 @@ export default function SmartFileUploader({
     }
   };
 
+  // Modified to work client-side without server upload
   const handleConversion = async (format) => {
     if (!uploadedFile || !format) return;
     
@@ -262,16 +260,18 @@ export default function SmartFileUploader({
     }, 200);
     
     try {
+      // Simulate conversion delay
       await new Promise(resolve => setTimeout(resolve, 1500 + Math.random() * 1500));
       
       clearInterval(progressInterval);
       setConversionProgress(100);
       
+      // For demo purposes, just use the original file URL
       const convertedFileData = {
         name: `${uploadedFile.name.split('.')[0]}.${format}`,
         size: Math.floor(uploadedFile.size * (Math.random() * 0.5 + 0.5)),
         type: `application/${format}`,
-        url: uploadedFile.url,
+        url: uploadedFile.url, // In a real app, this would be the converted file URL
         originalFormat: uploadedFile.extension,
         convertedFormat: format
       };
@@ -298,7 +298,7 @@ export default function SmartFileUploader({
 
   const getUploadStatusMessage = () => {
     if (processingPhase === 'uploading') {
-      return "Uploading your file...";
+      return "Processing your file...";
     } else if (processingPhase === 'analyzing') {
       const messages = [
         "Analyzing your document with AI...",
