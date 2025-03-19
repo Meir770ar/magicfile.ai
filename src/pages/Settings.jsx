@@ -1,6 +1,4 @@
-
-import React, { useState, useEffect } from 'react';
-import { User } from '@/api/entities';
+import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -21,37 +19,26 @@ import {
 } from "@/components/ui/select";
 import { Crown, CheckCircle, Sun, Moon } from "lucide-react";
 
+// Modified Settings page that works without authentication
 export default function SettingsPage() {
-  const [user, setUser] = useState(null);
-  const [isSaving, setIsSaving] = useState(false);
+  const [settings, setSettings] = useState({
+    default_language: "en",
+    auto_enhance: true,
+    theme: "light"
+  });
 
-  useEffect(() => {
-    loadUser();
-  }, []);
+  // Simulated handler - just updates local state, doesn't require authentication
+  const handleSettingChange = (setting, value) => {
+    setSettings({
+      ...settings,
+      [setting]: value
+    });
 
-  const loadUser = async () => {
-    try {
-      const userData = await User.me();
-      setUser(userData);
-    } catch (error) {
-      console.error("Error loading user:", error);
-    }
-  };
-
-  const handleSettingChange = async (setting, value) => {
-    try {
-      setIsSaving(true);
-      await User.updateMyUserData({
-        settings: {
-          ...(user?.settings || {}),
-          [setting]: value
-        }
-      });
-      loadUser();
-    } catch (error) {
-      console.error("Error updating settings:", error);
-    }
-    setIsSaving(false);
+    // Optional: could use localStorage to persist these settings for guest users
+    localStorage.setItem('user_settings', JSON.stringify({
+      ...settings,
+      [setting]: value
+    }));
   };
 
   const plans = [
@@ -93,9 +80,9 @@ export default function SettingsPage() {
     <div className="p-4 md:p-8">
       <div className="max-w-5xl mx-auto space-y-8">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Settings</h1>
-          <p className="mt-2 text-gray-600">
-            Manage your account settings and preferences
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">Settings</h1>
+          <p className="mt-2 text-gray-600 dark:text-gray-400">
+            Manage your preferences as a guest user
           </p>
         </div>
 
@@ -116,7 +103,7 @@ export default function SettingsPage() {
                 </p>
               </div>
               <Select
-                value={user?.settings?.default_language || "en"}
+                value={settings.default_language}
                 onValueChange={(value) => handleSettingChange("default_language", value)}
               >
                 <SelectTrigger className="w-[180px]">
@@ -137,7 +124,7 @@ export default function SettingsPage() {
                 </p>
               </div>
               <Switch
-                checked={user?.settings?.auto_enhance}
+                checked={settings.auto_enhance}
                 onCheckedChange={(checked) => handleSettingChange("auto_enhance", checked)}
               />
             </div>
@@ -150,7 +137,7 @@ export default function SettingsPage() {
                 </p>
               </div>
               <Select
-                value={user?.settings?.theme || "light"}
+                value={settings.theme}
                 onValueChange={(value) => handleSettingChange("theme", value)}
               >
                 <SelectTrigger className="w-[180px]">
@@ -189,8 +176,8 @@ export default function SettingsPage() {
                 <div
                   key={plan.name}
                   className={`rounded-xl border p-6 ${
-                    user?.subscription_tier === plan.name.toLowerCase()
-                      ? "border-blue-200 bg-blue-50"
+                    plan.name === "Free"
+                      ? "border-blue-200 bg-blue-50 dark:border-blue-900 dark:bg-blue-900/20"
                       : ""
                   }`}
                 >
@@ -205,8 +192,8 @@ export default function SettingsPage() {
                       <p className="text-2xl font-bold mt-2">{plan.price}</p>
                       <p className="text-sm text-gray-500">per month</p>
                     </div>
-                    {user?.subscription_tier === plan.name.toLowerCase() && (
-                      <Badge className="bg-blue-100 text-blue-800">
+                    {plan.name === "Free" && (
+                      <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">
                         Current Plan
                       </Badge>
                     )}
@@ -221,13 +208,13 @@ export default function SettingsPage() {
                   </ul>
                   <Button
                     className={`w-full mt-6 ${
-                      user?.subscription_tier === plan.name.toLowerCase()
-                        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                        : "bg-blue-600 hover:bg-blue-700"
+                      plan.name === "Free"
+                        ? "bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-gray-800 dark:text-gray-500"
+                        : "bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800"
                     }`}
-                    disabled={user?.subscription_tier === plan.name.toLowerCase()}
+                    disabled={plan.name === "Free"}
                   >
-                    {user?.subscription_tier === plan.name.toLowerCase()
+                    {plan.name === "Free"
                       ? "Current Plan"
                       : "Upgrade"}
                   </Button>
