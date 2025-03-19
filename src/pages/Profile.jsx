@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { FileText, UserCircle } from "lucide-react";
+import { UserCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 
@@ -42,20 +41,28 @@ export default function ProfilePage() {
         <h3 className="font-medium text-lg mb-4">Benefits Available for Guest Users:</h3>
         <ul className="space-y-2">
           <li className="flex items-start">
-            <FileText className="h-5 w-5 text-blue-500 mr-2 mt-0.5" />
+            <svg className="h-5 w-5 text-blue-500 mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+            </svg>
             <span>Convert documents, images, audio and video files</span>
           </li>
           <li className="flex items-start">
-            <FileText className="h-5 w-5 text-blue-500 mr-2 mt-0.5" />
-            <span>Use basic AI analysis features</span>
+            <svg className="h-5 w-5 text-blue-500 mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <span>Access to all basic conversion tools</span>
           </li>
           <li className="flex items-start">
-            <FileText className="h-5 w-5 text-blue-500 mr-2 mt-0.5" />
-            <span>Access to all standard conversion formats</span>
+            <svg className="h-5 w-5 text-blue-500 mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <span>File size limit of 100MB per conversion</span>
           </li>
           <li className="flex items-start">
-            <FileText className="h-5 w-5 text-blue-500 mr-2 mt-0.5" />
-            <span>100MB file size limit per conversion</span>
+            <svg className="h-5 w-5 text-blue-500 mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <span>Basic AI analysis features</span>
           </li>
         </ul>
       </div>
