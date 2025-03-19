@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -17,6 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { toast } from "@/components/ui/use-toast";
 import { Crown, CheckCircle, Sun, Moon } from "lucide-react";
 
 // Modified Settings page that works without authentication
@@ -26,19 +27,46 @@ export default function SettingsPage() {
     auto_enhance: true,
     theme: "light"
   });
+  
+  // Load settings from localStorage on component mount
+  useEffect(() => {
+    const savedSettings = localStorage.getItem('user_settings');
+    if (savedSettings) {
+      try {
+        setSettings(JSON.parse(savedSettings));
+      } catch (e) {
+        console.error("Failed to parse saved settings", e);
+      }
+    }
+  }, []);
 
-  // Simulated handler - just updates local state, doesn't require authentication
+  // Update settings in local storage whenever they change
   const handleSettingChange = (setting, value) => {
-    setSettings({
+    const newSettings = {
       ...settings,
       [setting]: value
+    };
+    
+    setSettings(newSettings);
+    
+    // Save to localStorage
+    localStorage.setItem('user_settings', JSON.stringify(newSettings));
+    
+    // Show toast notification
+    toast({
+      title: "Settings updated",
+      description: "Your preferences have been saved.",
     });
-
-    // Optional: could use localStorage to persist these settings for guest users
-    localStorage.setItem('user_settings', JSON.stringify({
-      ...settings,
-      [setting]: value
-    }));
+    
+    // Apply theme change immediately if that's what changed
+    if (setting === 'theme') {
+      const htmlEl = document.documentElement;
+      if (value === 'dark') {
+        htmlEl.classList.add('dark');
+      } else {
+        htmlEl.classList.remove('dark');
+      }
+    }
   };
 
   const plans = [
@@ -86,6 +114,22 @@ export default function SettingsPage() {
           </p>
         </div>
 
+        {/* Guest Mode Notice */}
+        <Card className="bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
+          <CardHeader>
+            <CardTitle className="text-blue-800 dark:text-blue-300">Guest Mode Active</CardTitle>
+            <CardDescription className="text-blue-700 dark:text-blue-400">
+              Your settings will be saved locally in this browser
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-blue-700 dark:text-blue-400">
+              All file conversion tools are available without an account. 
+              Your settings will be remembered on this device but won't sync across devices.
+            </p>
+          </CardContent>
+        </Card>
+
         {/* Preferences */}
         <Card>
           <CardHeader>
@@ -111,7 +155,11 @@ export default function SettingsPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="en">English</SelectItem>
+                  <SelectItem value="es">Spanish</SelectItem>
+                  <SelectItem value="fr">French</SelectItem>
+                  <SelectItem value="de">German</SelectItem>
                   <SelectItem value="he">Hebrew</SelectItem>
+                  <SelectItem value="ar">Arabic</SelectItem>
                 </SelectContent>
               </Select>
             </div>
